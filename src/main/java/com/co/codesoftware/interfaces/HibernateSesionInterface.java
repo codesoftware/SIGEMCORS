@@ -22,8 +22,5 @@ public interface HibernateSesionInterface {
      * @param tx
      * @throws HibernateException
      */
-    default void initOperation(Session sesion,Transaction tx) throws HibernateException {
-        sesion = HibernateUtil.getSessionFactory().openSession();
-        tx = sesion.beginTransaction();
-    }
+    
 }

@@ -5,16 +5,21 @@
  */
 package com.co.codesoftware.logica.administracion;
 
-import com.co.codesoftware.interfaces.HibernateSesionInterface;
+import com.co.codesoftware.persistencia.configuracion.HibernateUtil;
 import com.co.codesoftware.persistencia.entidades.administracion.SocioEntity;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 /**
  *
  * @author John
  */
-public class SocioLogica implements AutoCloseable, HibernateSesionInterface {
+public class SocioLogica implements AutoCloseable {
 
     private Session sesion;
     private Transaction tx;
@@ -28,11 +33,64 @@ public class SocioLogica implements AutoCloseable, HibernateSesionInterface {
     public String insertarSocio(SocioEntity entidad) {
         String respuesta = "Error";
         try {
-            initOperation(sesion, tx);
+            entidad.setFechaCreacion(new Date());
+            initOperation();
             sesion.save(entidad);
             respuesta = "OK";
         } catch (Exception e) {
-            respuesta += e.getMessage();
+            respuesta += e.toString();
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    /**
+     * metodo que consulta todos los socios
+     *
+     * @return
+     */
+    public List<SocioEntity> consultaSocios() {
+        List<SocioEntity> respuesta = new ArrayList<>();
+        try {
+            initOperation();
+            respuesta = sesion.createCriteria(SocioEntity.class).list();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    /**
+     * metodo que consulta en la base de datos un socio por id
+     *
+     * @param id
+     * @return
+     */
+    public SocioEntity consultaSocio(Integer id) {
+        SocioEntity respuesta = new SocioEntity();
+        try {
+            initOperation();
+            respuesta = (SocioEntity) sesion.createCriteria(SocioEntity.class).
+                    add(Restrictions.eq("id", id)).uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    /**
+     * metodo que actualiza un socio
+     * @param socio
+     * @return 
+     */
+    public String actualizaSocio(SocioEntity socio) {
+        String respuesta = "Error";
+        try {
+            initOperation();
+            sesion.update(socio);
+            respuesta = "OK";
+        } catch (Exception e) {
+            respuesta += e.toString();
             e.printStackTrace();
         }
         return respuesta;
@@ -46,6 +104,16 @@ public class SocioLogica implements AutoCloseable, HibernateSesionInterface {
         if (sesion != null) {
             sesion.close();
         }
+    }
+
+    /**
+     * metodo que inicializa la sesion
+     *
+     * @throws HibernateException
+     */
+    public void initOperation() throws HibernateException {
+        sesion = HibernateUtil.getSessionFactory().openSession();
+        tx = sesion.beginTransaction();
     }
 
 }

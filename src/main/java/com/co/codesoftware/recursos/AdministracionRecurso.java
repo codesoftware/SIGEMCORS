@@ -9,7 +9,6 @@ import com.co.codesoftware.logica.administracion.SocioLogica;
 import com.co.codesoftware.persistencia.entidades.administracion.SocioEntity;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -21,13 +20,18 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("/admin")
 @Produces("application/json")
-public class AdministracionRecurso  {
+public class AdministracionRecurso {
 
+    /**
+     * funcion que inserta un socio a la base de datos
+     *
+     * @param socio
+     * @return
+     */
     @POST
     @Path("/socio/insertar")
     @Produces(MediaType.APPLICATION_JSON)
-    public String insertaSocio(SocioEntity socio) {
-        System.out.println("hola");
+    public String insertarSocio(SocioEntity socio) {
         String respuesta = "";
         try (SocioLogica logica = new SocioLogica()) {
             respuesta = logica.insertarSocio(socio);
@@ -38,19 +42,57 @@ public class AdministracionRecurso  {
         return respuesta;
     }
 
-    @GET
-    @Path("/lista")
-    @Produces("application/json")
-    public List<SocioEntity> traeLista() {
+    /**
+     * metodo que consulta todos los socios
+     *
+     * @return
+     */
+    @POST
+    @Path("/socio/lista")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<SocioEntity> obtenerSocios() {
         List<SocioEntity> respuesta = new ArrayList<>();
-        try {
-            SocioEntity entidad = new SocioEntity();
-            entidad.setId(1);
-            entidad.setCiudad(1);
-            entidad.setDigitoVer("2");
-            entidad.setDireccion("cra");
-            entidad.setEstado("A");
-            respuesta.add(entidad);
+        try (SocioLogica logica = new SocioLogica()) {
+            respuesta = logica.consultaSocios();
+            respuesta = logica.consultaSocios();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    /**
+     * metodo que consulta un socio por el id
+     *
+     * @param id
+     * @return
+     */
+    @POST
+    @Path("/socio")
+    @Produces(MediaType.APPLICATION_JSON)
+    public SocioEntity obtenerSocio(Integer id) {
+        SocioEntity respuesta = new SocioEntity();
+        try (SocioLogica logica = new SocioLogica()) {
+            respuesta = logica.consultaSocio(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return respuesta;
+    }
+
+    /**
+     * metodo quee actualiza un socio
+     *
+     * @param socio
+     * @return
+     */
+    @POST
+    @Path("/socio/actualizar")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String actualizarSocio(SocioEntity socio) {
+        String respuesta = "";
+        try (SocioLogica logica = new SocioLogica()) {
+            respuesta = logica.actualizaSocio(socio);
         } catch (Exception e) {
             e.printStackTrace();
         }

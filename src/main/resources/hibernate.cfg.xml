@@ -11,5 +11,6 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
         <property name="hibernate.enable_lazy_load_no_trans">true</property>
+        <mapping class="com.co.codesoftware.persistencia.entidades.administracion.SocioEntity"/>
     </session-factory>
 </hibernate-configuration>
